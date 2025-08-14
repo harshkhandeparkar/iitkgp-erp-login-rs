@@ -17,11 +17,11 @@
 <br />
 <!-- UPDATE -->
 <div align="center">
-  <a href="https://github.com/metakgp/PROJECT_NAME">
+  <a href="https://github.com/metakgp/iitkgp-erp-login-rs">
      <img width="140" alt="image" src="https://raw.githubusercontent.com/metakgp/design/main/logos/black-large.jpg">
   </a>
 
-  <h3 align="center">PROJECT_NAME</h3>
+  <h3 align="center">IITKGP ERP Login Module (in Rust 🚀)</h3>
 
   <p align="center">
   <!-- UPDATE -->
@@ -29,7 +29,7 @@
     <br />
     <a href="https://UPDATE.metakgp.org">Website</a>
     ·
-    <a href="https://github.com/proffapt/PROJECT_NAME/issues">Request Feature / Report Bug</a>
+    <a href="https://github.com/proffapt/iitkgp-erp-login-rs/issues">Request Feature / Report Bug</a>
   </p>
 </div>
 
@@ -53,12 +53,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-<!-- UPDATE -->
-<div align="center">
-  <a href="https://github.com/metakgp/PROJECT_NAME">
-    <img width="80%" alt="image" src="https://user-images.githubusercontent.com/86282911/206632547-a3b34b47-e7ae-4186-a1e6-ecda7ddb38e6.png">
-  </a>
-</div>
 
 _Detailed explaination of the project goes here_
 
@@ -105,7 +99,7 @@ _Now that the environment has been set up and configured to properly compile and
 Use this space to show useful examples of how this project can be used. Additional screenshots, code examples and demos work well in this space.
 
 <div align="center">
-  <a href="https://github.com/metakgp/PROJECT_NAME">
+  <a href="https://github.com/metakgp/iitkgp-erp-login-rs">
     <img width="80%" alt="image" src="https://user-images.githubusercontent.com/86282911/206632640-40dc440e-5ef3-4893-be48-618f2bd85f37.png">
   </a>
 </div>
@@ -163,16 +157,16 @@ Honoring the original creator(s) and ideator(s) of this project.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/metakgp/PROJECT_NAME.svg?style=for-the-badge
-[contributors-url]: https://github.com/metakgp/PROJECT_NAME/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/metakgp/PROJECT_NAME.svg?style=for-the-badge
-[forks-url]: https://github.com/metakgp/PROJECT_NAME/network/members
-[stars-shield]: https://img.shields.io/github/stars/metakgp/PROJECT_NAME.svg?style=for-the-badge
-[stars-url]: https://github.com/metakgp/PROJECT_NAME/stargazers
-[issues-shield]: https://img.shields.io/github/issues/metakgp/PROJECT_NAME.svg?style=for-the-badge
-[issues-url]: https://github.com/metakgp/PROJECT_NAME/issues
-[license-shield]: https://img.shields.io/github/license/metakgp/PROJECT_NAME.svg?style=for-the-badge
-[license-url]: https://github.com/metakgp/PROJECT_NAME/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/metakgp/iitkgp-erp-login-rs.svg?style=for-the-badge
+[contributors-url]: https://github.com/metakgp/iitkgp-erp-login-rs/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/metakgp/iitkgp-erp-login-rs.svg?style=for-the-badge
+[forks-url]: https://github.com/metakgp/iitkgp-erp-login-rs/network/members
+[stars-shield]: https://img.shields.io/github/stars/metakgp/iitkgp-erp-login-rs.svg?style=for-the-badge
+[stars-url]: https://github.com/metakgp/iitkgp-erp-login-rs/stargazers
+[issues-shield]: https://img.shields.io/github/issues/metakgp/iitkgp-erp-login-rs.svg?style=for-the-badge
+[issues-url]: https://github.com/metakgp/iitkgp-erp-login-rs/issues
+[license-shield]: https://img.shields.io/github/license/metakgp/iitkgp-erp-login-rs.svg?style=for-the-badge
+[license-url]: https://github.com/metakgp/iitkgp-erp-login-rs/blob/master/LICENSE
 [wiki-shield]: https://custom-icon-badges.demolab.com/badge/metakgp_wiki-grey?logo=metakgp_logo&style=for-the-badge
 [wiki-url]: https://wiki.metakgp.org
 [slack-url]: https://slack.metakgp.org
