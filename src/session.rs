@@ -5,7 +5,7 @@ use reqwest::{
 use scraper::{Html, Selector};
 use std::{collections::HashMap, error::Error};
 
-use crate::erp::endpoints;
+use crate::erp::{endpoints, responses};
 
 pub struct Session {
     client: Client,
@@ -70,15 +70,15 @@ impl Session {
     pub async fn is_alive(&self) -> Result<bool, Box<dyn Error>> {
         let resp = self.client.get(endpoints::WELCOMEPAGE_URL).send().await?;
 
-        return if let Some(len) = resp.content_length() {
+        if let Some(len) = resp.content_length() {
             Ok(len == 1034)
         } else {
             Ok(false)
-        };
+        }
     }
 
     /// Fetches the session token
-    pub async fn get_sessiontoken(&self) -> Result<Option<String>, Box<dyn Error>> {
+    pub async fn get_sessiontoken(&mut self) -> Result<String, Box<dyn Error>> {
         let homepage = self
             .client
             .get(endpoints::HOMEPAGE_URL)
@@ -93,9 +93,15 @@ impl Session {
         let mut elements = document.select(&session_token_selector);
 
         if let Some(elem) = elements.next() {
-            Ok(elem.attr("value").map(|val| val.into()))
+            let session_token: String = elem
+                .attr("value")
+                .map(|val| val.into())
+                .ok_or(String::from("Error: session token not found."))?;
+            self.session_token = session_token.clone().into();
+
+            Ok(session_token)
         } else {
-            Ok(None)
+            Err(String::from("Error: Session token selector element not found.").into())
         }
     }
 
@@ -125,12 +131,96 @@ impl Session {
             .text()
             .await?;
 
-        if resp == "FALSE" {
+        if resp == responses::SECRET_QUES_ROLLNO_INVALID {
             Err(String::from("Error: Invalid roll number.").into())
         } else {
             self.question = resp.clone().into();
 
             Ok(resp)
+        }
+    }
+
+    /// Returns the form data for login requests
+    fn get_login_details(
+        &self,
+        requested_url: &str,
+    ) -> Result<HashMap<&'static str, String>, Box<dyn Error>> {
+        let mut login_details = HashMap::new();
+
+        login_details.insert(
+            "user_id",
+            self.user_id
+                .as_ref()
+                .ok_or("Error: Roll number not found.")?
+                .clone(),
+        );
+        login_details.insert(
+            "password",
+            self.password
+                .as_ref()
+                .ok_or("Error: Password not found.")?
+                .clone(),
+        );
+        login_details.insert(
+            "answer",
+            self.answer
+                .as_ref()
+                .ok_or("Error: Secret question answer not found.")?
+                .clone(),
+        );
+        login_details.insert(
+            "sessionToken",
+            self.session_token
+                .as_ref()
+                .ok_or("Error: Session token not found.")?
+                .clone(),
+        );
+
+        // No idea what this is
+        login_details.insert("typeee", "SI".into());
+        login_details.insert("requestedUrl", requested_url.into());
+
+        Ok(login_details)
+    }
+
+    /// Requests ERP to send an OTP.
+    pub async fn request_otp(
+        &mut self,
+        password: Option<String>,
+        answer: String,
+    ) -> Result<(), Box<dyn Error>> {
+        let password = password.unwrap_or(
+            self.password
+                .as_ref()
+                .expect("Error: Password not found.")
+                .clone(),
+        );
+        self.password = password.into();
+        self.answer = answer.into();
+
+        let login_details = self.get_login_details(endpoints::HOMEPAGE_URL)?;
+        dbg!(&login_details);
+        let resp = self
+            .client
+            .post(endpoints::OTP_URL)
+            .form(&login_details)
+            .headers(self.headers.clone())
+            .send()
+            .await?;
+
+        let resp: HashMap<String, String> = resp.json().await?;
+
+        if let Some(msg) = resp.get("msg") {
+            match msg.as_str() {
+                responses::ANSWER_MISMATCH_ERROR => {
+                    Err("Incorrect security question answer.".into())
+                }
+                responses::PASSWORD_MISMATCH_ERROR => Err("Incorrect password.".into()),
+                responses::OTP_SENT_MESSAGE => Ok(()),
+                _ => Err(format!("Error requesting OTP: {msg}").into()),
+            }
+        } else {
+            Err("Error: Response has no `msg` field.".into())
         }
     }
 }

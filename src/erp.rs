@@ -8,7 +8,8 @@ pub mod endpoints {
 }
 
 pub(crate) mod responses {
-	pub const ANSWER_MISMATCH_ERROR: &str =
+    pub const SECRET_QUES_ROLLNO_INVALID: &str = "FALSE";
+    pub const ANSWER_MISMATCH_ERROR: &str =
         "Unable to send OTP due to security question's answare mismatch .";
     pub const PASSWORD_MISMATCH_ERROR: &str = "Unable to send OTP due to password mismatch.";
     pub const OTP_SENT_MESSAGE: &str = "An OTP(valid for a short time) has been sent to your email id registered with ERP, IIT Kharagpur. Please use that OTP for further processing. ";
