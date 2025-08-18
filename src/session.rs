@@ -42,7 +42,12 @@ fn get_default_headers() -> HeaderMap {
         "timeout",
         "20".parse().expect("Error setting timeout header."),
     );
-    headers.insert(USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/51.0.2704.79 Chrome/51.0.2704.79 Safari/537.36".parse().expect("Error setting user-agent header."));
+    headers.insert(
+        USER_AGENT,
+        "Mozilla/5.0 (X11; Linux x86_64; rv:141.0) Gecko/20100101 Firefox/141.0"
+            .parse()
+            .expect("Error setting user-agent header."),
+    );
 
     headers
 }
@@ -54,7 +59,10 @@ impl Session {
         headers: Option<HeaderMap>,
     ) -> Session {
         Session {
-            client: Client::new(),
+            client: Client::builder()
+                .cookie_store(true)
+                .build()
+                .expect("Error building reqwest Client."),
             headers: headers.unwrap_or(get_default_headers()),
             user_id,
             password,
@@ -144,43 +152,41 @@ impl Session {
     fn get_login_details(
         &self,
         requested_url: &str,
-    ) -> Result<HashMap<&'static str, String>, Box<dyn Error>> {
-        let mut login_details = HashMap::new();
-
-        login_details.insert(
-            "user_id",
-            self.user_id
-                .as_ref()
-                .ok_or("Error: Roll number not found.")?
-                .clone(),
-        );
-        login_details.insert(
-            "password",
-            self.password
-                .as_ref()
-                .ok_or("Error: Password not found.")?
-                .clone(),
-        );
-        login_details.insert(
-            "answer",
-            self.answer
-                .as_ref()
-                .ok_or("Error: Secret question answer not found.")?
-                .clone(),
-        );
-        login_details.insert(
-            "sessionToken",
-            self.session_token
-                .as_ref()
-                .ok_or("Error: Session token not found.")?
-                .clone(),
-        );
-
-        // No idea what this is
-        login_details.insert("typeee", "SI".into());
-        login_details.insert("requestedUrl", requested_url.into());
-
-        Ok(login_details)
+    ) -> Result<Vec<(&'static str, String)>, Box<dyn Error>> {
+        Ok(vec![
+            (
+                "user_id",
+                self.user_id
+                    .as_ref()
+                    .ok_or("Error: Roll number not found.")?
+                    .clone(),
+            ),
+            (
+                "password",
+                self.password
+                    .as_ref()
+                    .ok_or("Error: Password not found.")?
+                    .clone(),
+            ),
+            (
+                "answer",
+                self.answer
+                    .as_ref()
+                    .ok_or("Error: Secret question answer not found.")?
+                    .clone(),
+            ),
+            // No idea what this is
+            ("typeee", "SI".into()),
+            ("email_otp", "".into()),
+            (
+                "sessionToken",
+                self.session_token
+                    .as_ref()
+                    .ok_or("Error: Session token not found.")?
+                    .clone(),
+            ),
+            ("requestedUrl", requested_url.into()),
+        ])
     }
 
     /// Requests ERP to send an OTP.
@@ -199,15 +205,15 @@ impl Session {
         self.answer = answer.into();
 
         let login_details = self.get_login_details(endpoints::HOMEPAGE_URL)?;
-        dbg!(&login_details);
+
         let resp = self
             .client
             .post(endpoints::OTP_URL)
             .form(&login_details)
             .headers(self.headers.clone())
-            .send()
-            .await?;
+            .build()?;
 
+        let resp = self.client.execute(resp).await?;
         let resp: HashMap<String, String> = resp.json().await?;
 
         if let Some(msg) = resp.get("msg") {
